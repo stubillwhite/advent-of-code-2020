@@ -1,5 +1,5 @@
 (ns advent-of-code-2020.day-3
-  (:require [advent-of-code-2020.utils :refer [parse-long]]
+  (:require [advent-of-code-2020.utils :refer [def- parse-long]]
             [clojure.java.io :as io]
             [clojure.string :as string]))
 
@@ -22,28 +22,48 @@
    :dx     dx
    :dy     dy})
 
-(defn- tree? [forest x y]
+(defn- hit-tree? [{:keys [forest x y]}]
   (-> forest
-      (nth y [])
-      (nth x [])
+      (nth y)
+      (nth x)
       (= \#)))
 
-(defn- next-state [{:keys [forest width trees x y dx dy] :as state}]
-  (let [new-x     (mod (+ x dx) width)
-        new-y     (+ y dy)
-        hit-tree? (tree? forest new-x new-y)]
+(defn- handle-collisions [{:keys [forest height x y trees] :as state}]
+  (if (< y height)
     (assoc state
-           :trees  (if hit-tree? (inc trees) trees)
-           :forest (assoc-in forest [new-y new-x] (if hit-tree? \X \O)) 
-           :x      new-x
-           :y      new-y)))
+           :forest (assoc-in forest [y x] (if (hit-tree? state) \X \O)) 
+           :trees  (if (hit-tree? state) (inc trees) trees))
+    state))
+
+(defn- next-state [{:keys [forest width trees x y dx dy] :as state}]
+  (handle-collisions (assoc state
+                            :x (mod (+ x dx) width)
+                            :y (+ y dy))))
 
 (defn- states [state]
   (iterate next-state state))
 
-(defn solution-part-one [input]
-  (let [state (initial-state (parse-input input) 3 1)]
-    (->> (states state)
-         (take-while (fn [{:keys [height y]}] (< y height)))
-         (last)
-         (:trees))))
+(defn solution-part-one
+  ([input]
+   (solution-part-one input 3 1))
+
+  ([input dx dy]
+   (let [state (initial-state (parse-input input) dx dy)]
+     (->> (states state)
+          (take-while (fn [{:keys [height y]}] (< y height)))
+          (last)
+          (:trees)))))
+
+;; Part two
+
+(def- potential-paths
+  [[1 1]
+   [3 1]
+   [5 1]
+   [7 1]
+   [1 2]])
+
+(defn solution-part-two [input]
+  (->> potential-paths
+       (map (fn [[dx dy]] (solution-part-one input dx dy)))
+       (reduce *)))
