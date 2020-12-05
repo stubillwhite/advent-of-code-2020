@@ -19,3 +19,9 @@
 
 (deftest solution-part-one-given-example-input-then-example-result
   (is (= 820 (solution-part-one example-input))))
+
+(deftest solution-part-one-given-problem-input-then-problem-result
+  (is (= 915 (solution-part-one problem-input))))
+
+(deftest solution-part-two-given-problem-input-then-problem-result
+  (is (= 699 (solution-part-two problem-input))))

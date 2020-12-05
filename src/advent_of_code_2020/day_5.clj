@@ -61,3 +61,21 @@
   (->> (parse-input input)
        (map seat-number)
        (apply max)))
+
+;; Part two
+
+(defn- missing-number [xs]
+  (reduce (fn [prev next]
+            (if (= (inc prev) next)
+              next
+              (reduced (inc prev))))
+          (first xs)
+          (rest xs)))
+
+(defn solution-part-two [input]
+  (->> (parse-input input)
+       (map seat-number)
+       (sort)
+       (missing-number)))
+
+(solution-part-two problem-input)
