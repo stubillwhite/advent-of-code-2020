@@ -1,5 +1,6 @@
 (ns advent-of-code-2020.day-6
   (:require [clojure.java.io :as io]
+            [clojure.set :refer [intersection]]
             [clojure.string :as string]))
 
 (def problem-input
@@ -24,7 +25,18 @@
        (map questions-answered)
        (apply +)))
 
+;; Part two
 
+(defn- questions-all-answered-yes [answers]
+  (->> answers
+       (map (fn [x] (into #{} x)))
+       (apply intersection)))
+
+(defn solution-part-two [input]
+  (->> (parse-input input)
+       (map questions-all-answered-yes)
+       (map count)
+       (apply +)))
 
 
 
