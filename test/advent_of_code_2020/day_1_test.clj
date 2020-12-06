@@ -4,11 +4,8 @@
             [clojure.string :as string]
             [clojure.test :refer :all]))
 
-(defn- test-input [entries]
-  (string/join "\n" entries))
-
 (def- example-input
-  (test-input [1721 979 366 299 675 1456]))
+  (string/join "\n" [1721 979 366 299 675 1456]))
 
 (deftest combinations-of-then-seq-of-possible-combinations
   (is (= [[]]                (combinations-of 0 [])))
