@@ -35,3 +35,14 @@
          (filter (fn [x] (contains? x :shiny-gold)))
          (count))))
 
+;; Part two
+
+(defn- count-of-all-bags-within [rules bag]
+  (let [contents (get rules bag)]
+    (->> contents
+         (map (fn [[color n]] (* n (inc (count-of-all-bags-within rules color)))))
+         (apply +))))
+
+(defn solution-part-two [input]
+  (let [rules (parse-input input)]
+    (count-of-all-bags-within rules :shiny-gold)))

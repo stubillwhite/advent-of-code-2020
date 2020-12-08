@@ -4,7 +4,7 @@
             [clojure.string :as string]
             [clojure.test :refer :all]))
 
-(def- example-input
+(def- example-input-one
   (string/join "\n"
                ["light red bags contain 1 bright white bag, 2 muted yellow bags."
                 "dark orange bags contain 3 bright white bags, 4 muted yellow bags."
@@ -28,11 +28,29 @@
    :dotted-black {}})
 
 (deftest parse-input-given-example-input-then-map
-  (is (= example-rules (parse-input example-input))))
+  (is (= example-rules (parse-input example-input-one))))
 
 (deftest solution-part-one-given-example-input-then-example-result
-  (is (= 4 (solution-part-one example-input))))
+  (is (= 4 (solution-part-one example-input-one))))
 
 (deftest solution-part-one-given-problem-input-then-correct-result
   (is (= 265 (solution-part-one problem-input))))
 
+(def- example-input-two
+  (string/join "\n"
+               ["shiny gold bags contain 2 dark red bags."
+                "dark red bags contain 2 dark orange bags."
+                "dark orange bags contain 2 dark yellow bags."
+                "dark yellow bags contain 2 dark green bags."
+                "dark green bags contain 2 dark blue bags."
+                "dark blue bags contain 2 dark violet bags."
+                "dark violet bags contain no other bags."]))
+
+(deftest solution-part-two-given-example-input-one-then-example-result
+  (is (= 32 (solution-part-two example-input-one))))
+
+(deftest solution-part-two-given-example-input-two-then-example-result
+  (is (= 126 (solution-part-two example-input-two))))
+
+(deftest solution-part-two-given-problem-input-then-correct-result
+  (is (= 14177 (solution-part-two problem-input))))
