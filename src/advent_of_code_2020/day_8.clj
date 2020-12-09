@@ -7,7 +7,7 @@
 (timbre/refer-timbre)
 
 ;; To enable debugging
-;; (timbre/set-level! (keyword :debug))
+(timbre/set-level! (keyword :debug))
 
 ;; Computer
 
@@ -64,6 +64,10 @@
 (defn- step-program-until [computer f]
   (take-while-inclusive (complement f) (iterate step computer)))
 
+(defn- execute-program-until [computer f]
+  (->> (step-program-until computer f)
+       (last)))
+
 ;; Part one
 
 (def problem-input
@@ -90,3 +94,30 @@
         (last)
         (:acc))))
 
+;; Part two
+
+(defn- instruction-pointer-beyond-program [{:keys [ip prg]}]
+  (>= ip (count prg)))
+
+(defn- decorrupted-programs [prg]
+  (apply concat
+   (for [n (range (count prg))
+         :when (contains? #{"nop" "jmp"} (first (get prg n)))]
+     [prg
+      (update-in prg [n 0] (fn [x] (case x
+                                    "nop" "jmp"
+                                    "jmp" "nop")))])))
+
+(defn- execute-or-halt [prg]
+  (execute-program-until
+   (initialise-computer prg)
+   (fn [x] (or (instruction-pointer-beyond-program x)
+              (trace-contains-duplicates x)))))
+
+(defn solution-part-two [input]
+  (let [prg (parse-input input)]
+    (->> (decorrupted-programs prg)
+         (map execute-or-halt)
+         (filter instruction-pointer-beyond-program)
+         (first)
+         (:acc))))

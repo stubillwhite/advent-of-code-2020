@@ -51,3 +51,11 @@
 
 (deftest solution-part-one-given-problem-input-then-problem-result
   (is (= 1584 (solution-part-one problem-input))))
+
+;; Part two
+
+(deftest solution-part-two-given-example-input-then-example-result
+  (is (= 8 (solution-part-two example-input))))
+
+(deftest solution-part-two-given-problem-input-then-problem-result
+  (is (= 920 (solution-part-two problem-input))))
