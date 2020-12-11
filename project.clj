@@ -9,6 +9,8 @@
 
   :repl-options {:port 4555}
 
+  :main advent-of-code-2020.main
+
   :plugins []
   
   :dependencies [;; core
@@ -25,5 +27,6 @@
                  ;; DI
                  [mount "0.1.16"]]
   
-  :profiles {:dev {:dependencies [[org.clojure/tools.namespace "1.0.0"]]
-                   :source-paths ["dev"]}})
+  :profiles {:dev     {:dependencies [[org.clojure/tools.namespace "1.0.0"]]
+                       :source-paths ["dev"]}
+             :uberjar {:aot [advent-of-code-2020.main]}})
