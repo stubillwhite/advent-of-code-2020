@@ -102,8 +102,9 @@
   (is (= (to-string (parse-input example-input)) example-input)))
 
 (deftest states-given-example-input-then-example-states
-  (let [actual-states (->> (parse-input example-input)
-                           (states)
+  (let [generate-states (fn [x] (states x immediate-neighbours-rules))
+        actual-states (->> (parse-input example-input)
+                           (generate-states)
                            (take 6)
                            (map to-string))]
     (is (= expected-states actual-states))))
