@@ -27,9 +27,9 @@
   {:loc      [0 0]
    :waypoint waypoint-location})
 
-(defn turn [{:keys [waypoint] :as ship} dir degrees]
+(defn- rotate-waypoint [{:keys [waypoint] :as ship} dir degrees]
   (if (= dir :left)
-    (turn ship :right (- degrees))
+    (rotate-waypoint ship :right (- degrees))
     (let [theta     (/ (* degrees Math/PI) 180)
           cos-theta (Math/cos theta)
           sin-theta (Math/sin theta)
@@ -48,11 +48,14 @@
   (assoc ship :loc
          (map + (map (partial * units) waypoint) loc)))
 
+(defn- move-ship [ship dir units]
+  (move-toward-waypoint ship (dir-to-waypoint dir) units))
+
 (defn- process-instruction [{:keys [waypoint] :as ship} {:keys [dir units] :as instr}]
   (cond
     (= dir :forward)                (move-toward-waypoint ship waypoint units)
-    (contains? #{:left :right} dir) (turn ship dir units)
-    :else                           (move-toward-waypoint ship (dir-to-waypoint dir) units)))
+    (contains? #{:left :right} dir) (rotate-waypoint ship dir units)
+    :else                           (move-ship ship dir units)))
 
 (defn- distance-from-origin [{:keys [loc]}]
   (let [[x y] loc] (+ (Math/abs x) (Math/abs y))))
@@ -70,7 +73,7 @@
 (defn- process-instructions-for-waypoint [{:keys [waypoint] :as ship} {:keys [dir units] :as instr}]
   (cond
     (= dir :forward)                (move-toward-waypoint ship waypoint units)
-    (contains? #{:left :right} dir) (turn ship dir units)
+    (contains? #{:left :right} dir) (rotate-waypoint ship dir units)
     :else                           (move-waypoint ship dir units)))
 
 (defn solution-part-two [input]
