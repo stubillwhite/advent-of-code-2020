@@ -8,10 +8,10 @@
 
 (defn- parse-timetable [[time buses]]
   {:time  (parse-long time)
-   :buses (->> (string/split buses #",")
-               (filter (partial not= "x"))
-               (map parse-long)
-               (into []))})
+   :buses (into {}
+                (for [[s idx] (partition 2 (interleave (string/split buses #",") (range)))
+                      :when (not= "x" s)]
+                  [(parse-long s) idx]))})
 
 (defn- parse-input [input]
   (->> input
@@ -19,7 +19,7 @@
        (parse-timetable)))
 
 (defn- waiting-times [{:keys [time buses]}]
-  (map (fn [x] [x (- x (mod time x))]) buses))
+  (map (fn [x] [x (- x (mod time x))]) (keys buses)))
 
 (defn solution-part-one [input]
   (->> (parse-input input)
@@ -27,3 +27,19 @@
        (apply min-key fnext)
        (apply *)))
 
+;; Part two
+
+(defn- find-matching-times [{:keys [curr-time step buses] :as state}]
+  (if (empty? buses)
+    state
+    (let [matching-curr-time (first (filter (fn [[bus offset]] (zero? (mod (+ curr-time offset) bus))) buses))]
+      (if (nil? matching-curr-time)
+        (recur (update state :curr-time + step))
+        (recur (-> state
+                   (assoc  :buses (filter (partial not= matching-curr-time) buses))
+                   (update :step * (first matching-curr-time))))))))
+
+(defn solution-part-two [input]
+  (let [{:keys [buses]} (parse-input input)
+        result          (find-matching-times {:curr-time 0 :step 1 :buses buses})]
+    (:curr-time result)))
