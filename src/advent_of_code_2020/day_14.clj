@@ -1,6 +1,7 @@
 (ns advent-of-code-2020.day-14
   (:require [advent-of-code-2020.utils :refer [parse-long]]
             [clojure.java.io :as io]
+            [clojure.set :refer [union]]
             [clojure.string :as string]))
 
 (def problem-input
@@ -19,36 +20,69 @@
        (map parse-instruction)
        (into [])))
 
-(defn- from-binary-string [x]
-  (Long/parseLong x 2))
+(defn- indexes-of [coll item]
+  (for [[x idx] (map vector coll (range))
+        :when (= x item)] idx)
+)
+(defn- create-mask [s]
+  (let [rev-s (reverse s)]
+    {:floating-bits (indexes-of rev-s \X)
+     :set-bits      (indexes-of rev-s \1)
+     :clear-bits    (indexes-of rev-s \0)}))
 
-(defn- set-bitmask [s]
-  (let [mask (from-binary-string (string/replace s #"(X|0)" "0"))]
-    (partial bit-or mask)))
+(defn- twiddle-bits [value f bits]
+  (reduce (fn [acc x] (f acc x)) value bits))
 
-(defn- clear-bitmask [s]
-  (let [mask (from-binary-string (string/replace s #"(X|1)" "1"))]
-    (partial bit-and mask)))
+(defn- masked-value [{:keys [floating-bits set-bits clear-bits]} value]
+  (-> value
+      (twiddle-bits bit-set set-bits)
+      (twiddle-bits bit-clear clear-bits)))
 
-(defn- create-mask-function [value]
-  (comp (set-bitmask value) (clear-bitmask value)))
-
-(defn- process-instruction [{:keys [f-mask] :as state} {:keys [instr addr value]}]
+(defn- version-one-decoder [{:keys [mask-data] :as state} {:keys [instr addr value]}]
   (case instr
-    :mask (assoc-in state [:f-mask] (create-mask-function value))
-    :mem  (assoc-in state [:memory addr] (f-mask value))))
+    :mask (assoc-in state [:mask-data] (create-mask value))
+    :mem  (assoc-in state [:memory addr] (masked-value mask-data value))))
 
-(defn- execute-program [instrs]
-  (reduce process-instruction
-          {:memory {}
-           :f-mask identity}
+(defn- execute-program [decoder instrs]
+  (reduce decoder
+          {:memory {}}
           instrs))
 
 (defn solution-part-one [input]
   (->> (parse-input input)
-       (execute-program)
+       (execute-program version-one-decoder)
        (:memory)
        (vals)
        (apply +)))
 
+;; Part two
+
+(defn- subsets [coll]
+  (loop [[x & xs] coll
+         sets     #{#{}}]
+    (if (nil? x)
+      sets
+      (recur xs
+             (union sets (map (fn [a] (conj a x)) sets))))))
+
+(defn- addresses-for [{:keys [floating-bits set-bits clear-bits]} addr]
+  (let [base-value   (-> addr
+                         (twiddle-bits bit-set set-bits)
+                         (twiddle-bits bit-clear floating-bits))
+        permutations (subsets floating-bits)]
+    (map (partial twiddle-bits base-value bit-set) permutations)))
+
+(defn- version-two-decoder [{:keys [mask-data] :as state} {:keys [instr addr value]}]
+  (case instr
+    :mask (assoc-in state [:mask-data] (create-mask value))
+    :mem  (reduce (fn [state addr] (assoc-in state [:memory addr] value))
+                  state
+                  (addresses-for mask-data addr))))
+
+(defn solution-part-two [input]
+  (->> (parse-input input)
+       (execute-program version-two-decoder)
+       (:memory)
+       (vals)
+       (apply +)))
 
