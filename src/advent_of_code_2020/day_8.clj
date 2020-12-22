@@ -7,7 +7,7 @@
 (timbre/refer-timbre)
 
 ;; To enable debugging
-(timbre/set-level! (keyword :debug))
+;; (timbre/set-level! (keyword :debug))
 
 ;; Computer
 

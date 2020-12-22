@@ -11,7 +11,10 @@
 
   :main advent-of-code-2020.main
 
-  :plugins []
+  :plugins [[lein-eftest "0.5.9"]]
+
+  :test-selectors {:quick (complement :slow)
+                   :slow  :slow}
   
   :dependencies [;; core
                  [org.clojure/tools.nrepl "0.2.13"]

@@ -11,27 +11,37 @@
        (map parse-long)
        (into [])))
 
-(defn- number-seq [starting-numbers]
-  (let [starting-length (count starting-numbers)
-        next-number     (fn [{:keys [last-number turn numbers cache] :as state}]
-                          (let [[x & xs]    numbers
-                                new-turn    (inc turn)
-                                new-number  (cond
-                                              (< turn starting-length)      x
-                                              (contains? cache last-number) (- turn (get cache last-number))
-                                              :else                         0)]
-                            (-> state
-                                (assoc :last-number new-number)
-                                (assoc :turn        new-turn) 
-                               (assoc :numbers     xs)
-                                (assoc :cache       (assoc cache last-number turn)))))]
-    (->> (iterate next-number
-                  {:last-number nil
-                   :turn        0
-                   :numbers     (cycle starting-numbers)
-                   :cache       {}})
-         (map :last-number))))
+(defn- create-initial-cache [starting-numbers]
+  (into {} (map-indexed
+            (fn [idx x]
+              (let [turn (inc idx)]
+                [x [turn turn]]))
+            starting-numbers)))
+
+(defn- update-cache [cache number turn]
+  (update cache number (fn [x]
+                         (if-let [[prior-spoken-turn spoken-turn] x]
+                           [spoken-turn turn]
+                           [turn turn]))))
+
+(defn nth-number [starting-numbers n]
+  (loop [prev  (last starting-numbers)
+         turn  (inc (count starting-numbers))
+         cache (create-initial-cache starting-numbers)]
+    (let [[spoken-prior-turn spoken-turn] (get cache prev [turn turn])
+          number                          (- spoken-turn spoken-prior-turn)]
+      (if (= turn n)
+        number
+        (recur number
+               (inc turn)
+               (update-cache cache number turn))))))
 
 (defn solution-part-one [input]
-  (-> (number-seq (parse-input input))
-      (nth 2020)))
+  (-> (nth-number (parse-input input) 2020)))
+
+;; Part two
+;;
+;; No obvious pattern to the numbers, so just refactor to speed things up
+
+(defn solution-part-two [input]
+  (-> (nth-number (parse-input input) 30000000)))

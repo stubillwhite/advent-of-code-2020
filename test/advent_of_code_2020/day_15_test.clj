@@ -14,4 +14,15 @@
 (deftest solution-part-one-given-problem-input-then-correct-result
   (is (= 620 (solution-part-one problem-input))))
 
+(deftest ^:slow solution-part-two-given-example-inputs-then-example-results
+  (is (= 175594  (solution-part-two "0,3,6")))
+  (is (= 2578    (solution-part-two "1,3,2")))
+  (is (= 3544142 (solution-part-two "2,1,3")))
+  (is (= 261214  (solution-part-two "1,2,3")))
+  (is (= 6895259 (solution-part-two "2,3,1")))
+  (is (= 18      (solution-part-two "3,2,1")))
+  (is (= 362     (solution-part-two "3,1,2"))))
+
+(deftest ^:slow solution-part-two-given-problem-input-then-correct-result
+  (is (= 110871 (solution-part-two problem-input))))
 
