@@ -68,14 +68,14 @@
   (testing "after one cycle"
     (is (= expected-after-one-cycle (nth-state example-input 1)))))
 
-(deftest solution-part-one-given-example-input-then-example-result
+(deftest ^:slow solution-part-one-given-example-input-then-example-result
   (is (= 112 (solution-part-one example-input))))
 
-(deftest solution-part-one-given-problem-input-then-correct-result
+(deftest ^:slow solution-part-one-given-problem-input-then-correct-result
   (is (= 267 (solution-part-one problem-input))))
 
-(deftest solution-part-two-given-example-input-then-example-result
+(deftest ^:slow solution-part-two-given-example-input-then-example-result
   (is (= 848 (solution-part-two example-input))))
 
-(deftest solution-part-two-given-problem-input-then-problem-result
+(deftest ^:slow solution-part-two-given-problem-input-then-problem-result
   (is (= 1812 (solution-part-two problem-input))))

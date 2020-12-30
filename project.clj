@@ -15,6 +15,10 @@
 
   :test-selectors {:quick (complement :slow)
                    :slow  :slow}
+
+  :eftest {:multithread? :vars
+           :thread-count 4
+           :test-warn-time 250}
   
   :dependencies [;; core
                  [org.clojure/tools.nrepl "0.2.13"]
