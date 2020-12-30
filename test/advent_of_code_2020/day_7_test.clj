@@ -33,7 +33,7 @@
 (deftest solution-part-one-given-example-input-then-example-result
   (is (= 4 (solution-part-one example-input-one))))
 
-(deftest solution-part-one-given-problem-input-then-correct-result
+(deftest ^:slow solution-part-one-given-problem-input-then-correct-result
   (is (= 265 (solution-part-one problem-input))))
 
 (def- example-input-two

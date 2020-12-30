@@ -27,5 +27,5 @@
 (deftest solution-part-two-given-example-input-then-example-result
   (is (= 208 (solution-part-two example-input-two))))
 
-(deftest solution-part-two-given-problem-input-then-correct-result
+(deftest ^:slow solution-part-two-given-problem-input-then-correct-result
   (is (= 3415488160714 (solution-part-two problem-input))))
